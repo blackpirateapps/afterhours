@@ -1,0 +1,8 @@
+.next/
+node_modules/
+pnpm-lock.yaml
+drizzle/
+src/server/db/auth-schema.ts
+src/fonts/
+playwright-report/
+test-results/

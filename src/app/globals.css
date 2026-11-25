@@ -1,0 +1,88 @@
+:root {
+  color-scheme: dark;
+  --bg: #161615;
+  --aside: #1a1a1a;
+  --raised: #21201e;
+  --text: #f5efe9;
+  --muted: #c9c0b6;
+  --accent: #ffc181;
+  --accent-dark: #4c3b2c;
+  --ink: #21170e;
+  --border: #8c8379;
+  --divider: #59534c;
+  --chart-grid: #48443f;
+  --error: #ffc0a9;
+  --radius: 11px;
+  --motion: 160ms ease-out;
+  font-family: var(--font-nunito), system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-width: 0;
+  font-size: 17px;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+h1,
+h2,
+h3,
+strong {
+  font-weight: 800;
+}
+a {
+  color: inherit;
+}
+button,
+input,
+select {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.62;
+}
+button,
+a,
+input,
+select,
+summary {
+  transition:
+    color var(--motion),
+    background-color var(--motion),
+    border-color var(--motion);
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+[tabindex="-1"]:focus {
+  outline: none;
+}
+[data-reduced="true"] *,
+[data-reduced="true"] *::before,
+[data-reduced="true"] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
