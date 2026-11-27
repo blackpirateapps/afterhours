@@ -17,7 +17,7 @@ import {
 } from "../lastfm/parse";
 import { RETENTION_SECONDS } from "../queries/time";
 import { getConnection, progress } from "./connections";
-import { accountForPayload, lockBudget, prune } from "./storage";
+import { accountForPayload, lockBudget, prune, upsertArt } from "./storage";
 
 export const INVOCATION_MS = 18_000;
 const PAGE_CAP = 6;
@@ -179,28 +179,6 @@ async function insertPlays(
     [id, JSON.stringify(plays), remaining, RETENTION_SECONDS],
   );
   return result;
-}
-
-async function upsertArt(
-  client: PoolClient,
-  id: string,
-  plays: Play[],
-): Promise<void> {
-  const covers = plays.filter((play) => play.cover !== null);
-  if (!covers.length) return;
-  await client.query(
-    `
-    INSERT INTO album_art(connection_id, artist_norm, album_norm, url, source_played_at)
-    SELECT DISTINCT ON (item->>'artistNorm', item->>'albumNorm') $1::uuid, item->>'artistNorm', item->>'albumNorm',
-           item->>'cover', to_timestamp((item->>'unixSecond')::bigint)
-    FROM jsonb_array_elements($2::jsonb) WITH ORDINALITY src(item, ix)
-    WHERE to_timestamp((item->>'unixSecond')::bigint) >= clock_timestamp() - $3 * interval '1 second'
-    ORDER BY item->>'artistNorm', item->>'albumNorm', (item->>'unixSecond')::bigint DESC, ix
-    ON CONFLICT (connection_id, artist_norm, album_norm) DO UPDATE
-      SET url = excluded.url, source_played_at = excluded.source_played_at
-      WHERE excluded.source_played_at >= album_art.source_played_at`,
-    [id, JSON.stringify(covers), RETENTION_SECONDS],
-  );
 }
 
 async function commitPage(

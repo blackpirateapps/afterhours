@@ -34,7 +34,7 @@ import {
   seedPlays,
 } from "../fixtures/database";
 
-const cover = "https://lastfm.freetls.fastly.net/i/u/300x300/a.jpg";
+const cover = "https://lastfm-img.freetls.fastly.net/i/u/300x300/a.jpg";
 const newer = "https://lastfm-img2.akamaized.net/i/u/300x300/b.png";
 
 function stub(

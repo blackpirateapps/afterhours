@@ -15,6 +15,8 @@ import { historyFilters, literalSearch } from "@/server/queries/history";
 import { rangeWindow } from "@/server/queries/time";
 
 const valid = "https://lastfm.freetls.fastly.net/i/u/300x300/cover.webp";
+const currentCover =
+  "https://lastfm-img.freetls.fastly.net/i/u/300x300/album.jpg";
 const track = (uts: string | number) => ({
   name: "Afternoon",
   artist: { "#text": " Artist  " },
@@ -78,13 +80,13 @@ describe("Last.fm response validation", () => {
           "#text": "https://lastfm-img2.akamaized.net/i/u/small.png",
         },
         { size: "mega", "#text": "https://example.com/i/u/invalid.png" },
-        { size: "extralarge", "#text": valid },
+        { size: "extralarge", "#text": currentCover },
       ],
     };
     expect(
       parsePage(page(item, { total: 1 }), { from: 100, to: 110, page: 1 })
         .plays[0].cover,
-    ).toBe(valid);
+    ).toBe(currentCover);
   });
 
   it("normalizes grouping separately from source identity", () => {
@@ -188,6 +190,7 @@ describe("shared validation and time", () => {
     expect(approvedCover(valid)).toBe(valid);
     for (const url of [
       valid + "?q=1",
+      currentCover.replace(".net", ".net.example"),
       valid + "#x",
       valid.replace("https", "http"),
       valid.replace(".net/", ".net:8443/"),

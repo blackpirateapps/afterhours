@@ -110,7 +110,7 @@ try {
           name,
           track,
           album,
-          `https://lastfm.freetls.fastly.net/i/u/300x300/fixture-${art}.jpg`,
+          `https://lastfm-img.freetls.fastly.net/i/u/300x300/fixture-${art}.jpg`,
         ),
       );
     }
@@ -124,7 +124,7 @@ try {
       "Transit Maps",
       "Sleeve missing",
       "Transit Tapes",
-      "https://lastfm.freetls.fastly.net/i/u/300x300/fixture-broken.jpg",
+      "https://lastfm-img.freetls.fastly.net/i/u/300x300/fixture-broken.jpg",
     ),
   );
   const mediaId = (await getConnection("media"))!.id;

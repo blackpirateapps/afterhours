@@ -17,16 +17,19 @@ async function session(context: BrowserContext, user: User) {
 
 async function visuals(page: Page) {
   await page.clock.setFixedTime(new Date("2026-11-25T20:00:00Z"));
-  await page.route("https://lastfm.freetls.fastly.net/**", async (route) => {
-    const match = new URL(route.request().url()).pathname.match(
-      /fixture-(city|coral|train|mono)\.jpg$/,
-    );
-    if (!match) return route.fulfill({ status: 404, body: "" });
-    return route.fulfill({
-      contentType: "image/jpeg",
-      body: readFileSync(resolve("tests/fixtures/covers", `${match[1]}.jpg`)),
-    });
-  });
+  await page.route(
+    "https://lastfm-img.freetls.fastly.net/**",
+    async (route) => {
+      const match = new URL(route.request().url()).pathname.match(
+        /fixture-(city|coral|train|mono)\.jpg$/,
+      );
+      if (!match) return route.fulfill({ status: 404, body: "" });
+      return route.fulfill({
+        contentType: "image/jpeg",
+        body: readFileSync(resolve("tests/fixtures/covers", `${match[1]}.jpg`)),
+      });
+    },
+  );
   await page.route("https://avatars.githubusercontent.com/**", (route) =>
     route.fulfill({
       contentType: "image/jpeg",
@@ -45,6 +48,7 @@ test("serves the credential-protected routes, nonce CSP, and a real OAuth author
   const csp = response?.headers()["content-security-policy"] ?? "";
   expect(csp).toContain("frame-ancestors 'none'");
   expect(csp).toContain("form-action 'self'");
+  expect(csp).toContain("https://lastfm-img.freetls.fastly.net");
   expect(csp).not.toContain("unsafe-eval");
   const nonce = csp.match(/'nonce-([^']+)'/)?.[1];
   expect(nonce).toBeTruthy();
@@ -312,10 +316,16 @@ test("filters, retries history pagination, and renders missing, broken, and disa
     "src",
     "/record-fallback.svg",
   );
-  await expect(page.locator("main ol img").nth(3)).toHaveAttribute(
+  const cover = page.locator("main ol img").nth(3);
+  await expect(cover).toHaveAttribute(
     "src",
-    /fixture-city\.jpg/,
+    "https://lastfm-img.freetls.fastly.net/i/u/300x300/fixture-city.jpg",
   );
+  await expect
+    .poll(() =>
+      cover.evaluate((image) => (image as HTMLImageElement).naturalWidth),
+    )
+    .toBeGreaterThan(0);
   expect(unexpected).toEqual([]);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
     320,

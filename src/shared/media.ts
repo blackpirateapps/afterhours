@@ -1,5 +1,6 @@
 export const coverHosts = [
   "lastfm.freetls.fastly.net",
+  "lastfm-img.freetls.fastly.net",
   "lastfm-img2.akamaized.net",
 ] as const;
 
